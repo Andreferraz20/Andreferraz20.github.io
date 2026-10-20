@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>André Ferraz</title>
+<meta property="og:title" content="André Ferraz · Desenvolvedor Backend">
+<meta property="og:description" content="Node.js, TypeScript e NestJS. APIs, microsserviços, mensageria e IA generativa.">
+<meta name="description" content="André Ferraz, desenvolvedor backend Node.js, TypeScript e NestJS no Rio de Janeiro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: coluna única estreita; cada seção é uma "rota" da API pessoal, hero com resposta JSON ao lado */
+:root{
+  --bg:#faf7ff; --surface:#ffffff; --line:#e4dcf2;
+  --fg:#241238; --muted:#6b5f85;
+  --pink:#c4106f; --cyan:#00838f; --violet:#6a2c9c;
+  --glow:rgba(196,16,111,.10);
+  --f-display:"Chakra Petch", "Trebuchet MS", sans-serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a0612; --surface:#150d24; --line:#2a1a42;
+    --fg:#e8e3f5; --muted:#9a8fb5;
+    --pink:#ff2e9f; --cyan:#00f5ff; --violet:#a35cf0;
+    --glow:rgba(255,46,159,.14);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a0612; --surface:#150d24; --line:#2a1a42;
+  --fg:#e8e3f5; --muted:#9a8fb5;
+  --pink:#ff2e9f; --cyan:#00f5ff; --violet:#a35cf0;
+  --glow:rgba(255,46,159,.14);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0}
+img{max-width:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.6;
+  background-image:radial-gradient(60rem 30rem at 85% -10%, var(--glow), transparent 70%);}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4px}
+.wrap{max-width:62rem;margin:0 auto;padding-block:0 4rem;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));}
+
+/* nav */
+nav{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.75rem;padding-block:1.5rem}
+.logo{font-family:var(--f-mono);font-size:.9rem;color:var(--muted)}
+.logo b{color:var(--pink);font-weight:500}
+nav ul{display:flex;flex-wrap:wrap;gap:1.25rem;list-style:none;margin:0;padding:0;font-family:var(--f-mono);font-size:.8rem}
+nav a{text-decoration:none;color:var(--muted)}
+nav a:hover{color:var(--cyan)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.15fr 1fr;gap:2.5rem;align-items:center;padding-block:3rem 4rem}
+.hero > *{min-width:0}
+.status{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--f-mono);font-size:.78rem;color:var(--cyan);
+  border:1px solid var(--line);border-radius:99px;padding:.3rem .8rem;background:var(--surface)}
+.status i{width:.5rem;height:.5rem;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(2.6rem,7vw,4.4rem);line-height:1;margin:1.1rem 0 .6rem;letter-spacing:-.01em;text-wrap:balance}
+h1 span{color:var(--pink)}
+.role{font-family:var(--f-display);font-weight:500;font-size:1.25rem;color:var(--violet);margin:0 0 1rem}
+.lead{color:var(--muted);max-width:34rem;margin:0 0 1.75rem}
+.actions{display:flex;flex-wrap:wrap;gap:.75rem}
+.btn{font:500 .9rem var(--f-body);display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.15rem;border-radius:8px;
+  border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;cursor:pointer;transition:border-color .2s, transform .2s}
+.btn:hover{border-color:var(--cyan);transform:translateY(-1px)}
+.btn.primary{background:var(--pink);border-color:var(--pink);color:#fff}
+.btn.primary:hover{border-color:var(--pink);filter:brightness(1.08)}
+
+/* terminal */
+.term{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  box-shadow:0 20px 50px -25px var(--pink)}
+.term-bar{display:flex;align-items:center;gap:.6rem;padding:.65rem .9rem;border-bottom:1px solid var(--line);font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.term-bar .m{color:var(--cyan);font-weight:500}
+.term-bar .ok{margin-left:auto;color:var(--pink)}
+pre{margin:0;padding:1.1rem 1.1rem 1.3rem;font-family:var(--f-mono);font-size:.8rem;line-height:1.7;overflow-x:auto;color:var(--fg)}
+.k{color:var(--violet)} .s{color:var(--cyan)} .n{color:var(--pink)} .p{color:var(--muted)}
+
+/* sections */
+section{padding-block:3rem;border-top:1px solid var(--line)}
+.route{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);margin:0 0 .4rem}
+.route b{color:var(--cyan);font-weight:500;margin-right:.5rem}
+h2{font-family:var(--f-display);font-weight:600;font-size:clamp(1.6rem,3.5vw,2.1rem);margin:0 0 1.75rem;line-height:1.15;text-wrap:balance}
+.prose{max-width:40rem;color:var(--muted)}
+.prose p{margin:0 0 1rem}
+.prose strong{color:var(--fg);font-weight:500}
+
+/* timeline */
+.timeline{display:grid;gap:0;list-style:none;margin:0;padding:0}
+.job{display:grid;grid-template-columns:11rem 1fr;gap:1.5rem;padding:1.25rem 0;border-bottom:1px dashed var(--line)}
+.job:last-child{border-bottom:0}
+.job > *{min-width:0}
+.when{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);padding-top:.25rem}
+.job h3{font-family:var(--f-display);font-weight:600;font-size:1.2rem;margin:0}
+.job .co{color:var(--pink);font-weight:500;margin:.1rem 0 .6rem;font-size:.95rem}
+.job ul{margin:0;padding-left:1.1rem;color:var(--muted)}
+.job li{margin:.25rem 0}
+.job li::marker{color:var(--violet)}
+
+/* projects */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.4rem;display:flex;flex-direction:column;gap:.6rem;transition:border-color .2s}
+.card:hover{border-color:var(--violet)}
+.card .tag{font-family:var(--f-mono);font-size:.72rem;color:var(--cyan);letter-spacing:.04em;text-transform:uppercase}
+.card h3{font-family:var(--f-display);font-weight:600;font-size:1.15rem;margin:0}
+.card p{margin:0;color:var(--muted);font-size:.95rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:auto;padding-top:.4rem}
+.chip{font-family:var(--f-mono);font-size:.72rem;padding:.2rem .55rem;border-radius:6px;border:1px solid var(--line);color:var(--fg)}
+
+/* stack */
+.stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem 2rem}
+.stack h3{font-family:var(--f-mono);font-weight:500;font-size:.8rem;color:var(--violet);margin:0 0 .6rem;letter-spacing:.06em;text-transform:uppercase}
+.stack .chip{font-size:.8rem;padding:.3rem .65rem;background:var(--surface)}
+
+/* education */
+.edu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+
+/* contact */
+.contact{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.contact .card{gap:.35rem}
+.contact .val{font-family:var(--f-mono);font-size:.85rem;color:var(--fg);word-break:break-all;user-select:all}
+.copy{align-self:flex-start;margin-top:.5rem;font:500 .8rem var(--f-body);padding:.4rem .75rem;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--cyan);cursor:pointer}
+.copy:hover{border-color:var(--cyan)}
+footer{padding-top:2rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+footer a{text-decoration:none} footer a:hover{color:var(--cyan)}
+
+@media (max-width:760px){
+  .hero{grid-template-columns:1fr;padding-block:1.5rem 3rem}
+  .job{grid-template-columns:1fr;gap:.4rem}
+  .grid,.stack,.edu,.contact{grid-template-columns:1fr}
+  nav ul{gap:.9rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav aria-label="Seções">
+    <div class="logo"><b>~/</b>andre-ferraz</div>
+    <ul>
+      <li><a href="#sobre">/sobre</a></li>
+      <li><a href="#experiencia">/experiencia</a></li>
+      <li><a href="#projetos">/projetos</a></li>
+      <li><a href="#stack">/stack</a></li>
+      <li><a href="#contato">/contato</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <span class="status"><i></i>Disponível para novas oportunidades</span>
+      <h1>André <span>Ferraz</span></h1>
+      <p class="role">Desenvolvedor Backend · Node.js, TypeScript e NestJS</p>
+      <p class="lead">Mais de 4 anos construindo APIs, microsserviços e fluxos orientados a eventos em produção. Integrações de pagamento, mensageria e soluções com IA generativa. Rio de Janeiro, RJ.</p>
+      <div class="actions">
+        <a class="btn primary" href="#projetos">Ver projetos</a>
+        <button class="btn" type="button" id="copy-hero" data-copy="luizlopesferraz22@gmail.com">Copiar e-mail</button>
+        <a class="btn" href="https://www.linkedin.com/in/andre-ferraz95" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </div>
+    <div class="term" aria-label="Resumo do perfil em formato JSON">
+      <div class="term-bar"><span class="m">GET</span>/api/v1/devs/andre-ferraz<span class="ok">200 OK</span></div>
+<pre><span class="p">{</span>
+  <span class="k">"nome"</span>: <span class="s">"André Luiz Lopes Ferraz"</span>,
+  <span class="k">"cargo"</span>: <span class="s">"Backend Developer"</span>,
+  <span class="k">"experiencia_anos"</span>: <span class="n">4.5</span>,
+  <span class="k">"stack"</span>: [<span class="s">"Node.js"</span>, <span class="s">"TypeScript"</span>,
+            <span class="s">"NestJS"</span>, <span class="s">"Java"</span>],
+  <span class="k">"cloud"</span>: [<span class="s">"GCP"</span>, <span class="s">"AWS"</span>],
+  <span class="k">"mensageria"</span>: [<span class="s">"Pub/Sub"</span>, <span class="s">"SQS"</span>],
+  <span class="k">"ia"</span>: <span class="s">"Claude API + agentes"</span>,
+  <span class="k">"local"</span>: <span class="s">"Rio de Janeiro, BR"</span>,
+  <span class="k">"open_to_work"</span>: <span class="n">true</span>
+<span class="p">}</span></pre>
+    </div>
+  </header>
+
+  <section id="sobre">
+    <p class="route"><b>GET</b>/sobre</p>
+    <h2>Backend com foco em produção</h2>
+    <div class="prose">
+      <p>Sou desenvolvedor backend com mais de 4 anos de experiência, a maior parte deles na <strong>Grupo UAU</strong> (UAUBox, Scarlet e Experimentaí), uma empresa de e-commerce e assinatura de beleza. Lá trabalhei com <strong>microsserviços no GCP</strong>, integrações de pagamento e arquitetura orientada a eventos.</p>
+      <p>Gosto de resolver problemas reais de produção: concorrência, consistência de dados entre serviços, falhas em pipelines. Acompanho as entregas até o deploy e investigo incidentes a partir de logs e métricas.</p>
+      <p>Também construo soluções com <strong>IA generativa</strong>: de um assistente conversacional com a API do Claude a agentes em TypeScript que apoiam o code review do time.</p>
+    </div>
+  </section>
+
+  <section id="experiencia">
+    <p class="route"><b>GET</b>/experiencia</p>
+    <h2>Experiência</h2>
+    <ol class="timeline">
+      <li class="job">
+        <div class="when">~4,5 anos · até 2026</div>
+        <div>
+          <h3>Desenvolvedor Backend</h3>
+          <p class="co">Grupo UAU · UAUBox, Scarlet, Experimentaí</p>
+          <ul>
+            <li>Construção e manutenção de APIs REST e microsserviços em Node.js, TypeScript e NestJS, com Java e Spring Boot em parte dos serviços.</li>
+            <li>Centralização do tratamento de webhooks de pagamento da Vindi e da Stripe em um único serviço.</li>
+            <li>Fluxos assíncronos com Google Pub/Sub e AWS SQS, inclusive para resolver problemas de concorrência no processamento.</li>
+            <li>Assistente conversacional com a API do Claude que substituiu um formulário na coleta do perfil de beleza dos clientes.</li>
+            <li>Período como único desenvolvedor do time, assumindo também a manutenção do frontend em React.</li>
+            <li>Testes automatizados com Jest, Supertest, JUnit e Mockito, code review e deploy em Cloud Run.</li>
+          </ul>
+        </div>
+      </li>
+      <li class="job">
+        <div class="when">Anterior</div>
+        <div>
+          <h3>Educador</h3>
+          <p class="co">ONG Recode</p>
+          <ul><li>Ensino de tecnologia e programação, apoiando o desenvolvimento de novos profissionais.</li></ul>
+        </div>
+      </li>
+      <li class="job">
+        <div class="when">Anterior</div>
+        <div>
+          <h3>Estagiário de Sistemas</h3>
+          <p class="co">ICTSI · Libra Terminais Rio</p>
+          <ul><li>Suporte e desenvolvimento na área de sistemas de um terminal portuário.</li></ul>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section id="projetos">
+    <p class="route"><b>GET</b>/projetos</p>
+    <h2>Projetos em destaque</h2>
+    <div class="grid">
+      <article class="card">
+        <span class="tag">Produção · Pagamentos</span>
+        <h3>Hub de webhooks de pagamento</h3>
+        <p>Serviço único para receber, validar e processar os eventos da Vindi e da Stripe, com processamento assíncrono para evitar duplicidade e disputas de atualização.</p>
+        <div class="chips"><span class="chip">NestJS</span><span class="chip">Pub/Sub</span><span class="chip">PostgreSQL</span></div>
+      </article>
+      <article class="card">
+        <span class="tag">Produção · IA</span>
+        <h3>Perfil de beleza conversacional</h3>
+        <p>Assistente com a API do Claude que coleta o perfil de beleza do cliente por conversa, substituindo um formulário tradicional.</p>
+        <div class="chips"><span class="chip">Claude API</span><span class="chip">TypeScript</span><span class="chip">Node.js</span></div>
+      </article>
+      <article class="card">
+        <span class="tag">Agentes · Engenharia</span>
+        <h3>Agente de revisão de merge requests</h3>
+        <p>Agente em TypeScript que analisa merge requests e aponta problemas e desvios de padrão, apoiando o code review e a padronização do código.</p>
+        <div class="chips"><span class="chip">Anthropic SDK</span><span class="chip">Tool use</span><span class="chip">Git</span></div>
+      </article>
+      <article class="card">
+        <span class="tag">Agentes · Multiagente</span>
+        <h3>Triagem de vagas com IA</h3>
+        <p>Pipeline multiagente que lê descrições de vagas, extrai requisitos e avalia a aderência ao perfil, com agentes especializados orquestrados em sequência.</p>
+        <div class="chips"><span class="chip">Anthropic SDK</span><span class="chip">Multiagente</span><span class="chip">TypeScript</span></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="stack">
+    <p class="route"><b>GET</b>/stack</p>
+    <h2>Stack</h2>
+    <div class="stack">
+      <div><h3>Linguagens</h3><div class="chips"><span class="chip">TypeScript</span><span class="chip">JavaScript</span><span class="chip">Java</span><span class="chip">SQL</span></div></div>
+      <div><h3>Backend</h3><div class="chips"><span class="chip">Node.js</span><span class="chip">NestJS</span><span class="chip">Spring Boot</span><span class="chip">APIs REST</span><span class="chip">Microsserviços</span></div></div>
+      <div><h3>Dados</h3><div class="chips"><span class="chip">PostgreSQL</span><span class="chip">Prisma ORM</span><span class="chip">JPA / Hibernate</span><span class="chip">Cloud SQL</span></div></div>
+      <div><h3>Cloud e mensageria</h3><div class="chips"><span class="chip">GCP Cloud Run</span><span class="chip">Pub/Sub</span><span class="chip">AWS SQS</span><span class="chip">Docker</span><span class="chip">CI/CD</span></div></div>
+      <div><h3>Qualidade</h3><div class="chips"><span class="chip">Jest</span><span class="chip">Supertest</span><span class="chip">JUnit</span><span class="chip">Mockito</span><span class="chip">SOLID</span></div></div>
+      <div><h3>IA e frontend</h3><div class="chips"><span class="chip">Claude API</span><span class="chip">Claude Code</span><span class="chip">Agentes</span><span class="chip">React</span></div></div>
+    </div>
+  </section>
+
+  <section id="formacao">
+    <p class="route"><b>GET</b>/formacao</p>
+    <h2>Formação</h2>
+    <div class="edu">
+      <article class="card">
+        <span class="tag">Em andamento</span>
+        <h3>Tecnólogo em Análise e Desenvolvimento de Sistemas</h3>
+        <p>UNISUAM</p>
+      </article>
+      <article class="card">
+        <span class="tag">Cursos</span>
+        <h3>Rocketseat</h3>
+        <p>Formações e certificações em desenvolvimento backend, incluindo IA aplicada ao fluxo de versionamento com Git.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="contato">
+    <p class="route"><b>POST</b>/contato</p>
+    <h2>Vamos conversar</h2>
+    <div class="contact">
+      <article class="card">
+        <span class="tag">E-mail</span>
+        <span class="val">luizlopesferraz22@gmail.com</span>
+        <button class="copy" type="button" id="copy-email" data-copy="luizlopesferraz22@gmail.com">Copiar</button>
+      </article>
+      <article class="card">
+        <span class="tag">Telefone</span>
+        <span class="val">(21) 99846-1039</span>
+        <button class="copy" type="button" id="copy-phone" data-copy="(21) 99846-1039">Copiar</button>
+      </article>
+      <article class="card">
+        <span class="tag">LinkedIn</span>
+        <span class="val">in/andre-ferraz95</span>
+        <a class="copy" href="https://www.linkedin.com/in/andre-ferraz95" target="_blank" rel="noopener" style="text-decoration:none">Abrir ↗</a>
+      </article>
+    </div>
+  </section>
+
+  <footer>
+    <span>André Luiz Lopes Ferraz · Rio de Janeiro</span>
+    <a href="#sobre">voltar ao topo ↑</a>
+  </footer>
+</div>
+
+<script>
+document.querySelectorAll('[data-copy]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var text = btn.getAttribute('data-copy'), label = btn.textContent;
+    function done(msg){ btn.textContent = msg; setTimeout(function(){ btn.textContent = label; }, 1600); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ done('Copiado!'); }, function(){ done(text); });
+    } else { done(text); }
+  });
+});
+</script>
+
+</body>
+</html>
